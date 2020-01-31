@@ -16,6 +16,7 @@
 // ======== DEFINITION OF MACROS
 #define 	idx(i,j)			i*n+j
 #define		Amat(i,j)			A[idx(i,j)]
+#define		empty(Q)			(Q->head == Q->tail)
 
 // ======= End of Definitions
 
@@ -44,6 +45,7 @@ typedef struct Queue {
 	\return 				Pointer to the Queue								[pointer]
 */
 Queue* init(size_t size); 
+
 
 //! Adds an element to the queue.
 /*!

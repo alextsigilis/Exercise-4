@@ -1,32 +1,67 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 #include "rcm.h"
 
-#include <stdio.h>
+unsigned int* Deg;
 
-void findDegree( const size_t n, const double *A, unsigned int *deg ) {
+int cmp( const void *a, const void *b ) {
 	
-	for( size_t v = 0; v < n; v++ ) {
-		deg[v] = -1; // Don't count itself.
-		for( size_t i = 0; i < n; i++) {
-			deg[v] += (Amat(v,i) != 0)? 1 : 0;
-		}
+	int i = *(unsigned int*)a,
+			j = *(unsigned int*)b;
 
-	}
+	return ( Deg[i] - Deg[j] );
+
+}
+
+int minDegreeVertex( size_t n ) {
+	
+	int min = 0;
+	for( size_t v = 1; v < n; v++ )
+		if( Deg[min] > Deg[v] ) 
+			min = v;
+	return min;
 
 }
 
 void rcm( const size_t n, const double *A, unsigned int *R ) {
 
-	unsigned int *deg = malloc(n*sizeof(unsigned int));
+	Deg = malloc(n*sizeof(unsigned int));
+	unsigned int N[n][n],
+							 visited[n],
+							 k = 0;
 
-	findDegree( n, A, deg );
+	
+	// Create the neighborhood of each 
+	for( size_t v = 0; v < n; v++ ) {
+		
+		Deg[v] = 0;
 
-	for( size_t i = 0; i < n; i++ ) {
+		for( int i = 0; i < n; i++ ) {
+				if( Amat(v,i) != 0 && v != i ) {
+					N[v][ Deg[v]++ ] = i;
+				}
+		}
 
-		printf("deg( %d ) = %d \n", i, deg[i]);
+		visited[v] = 0;
+	}
+
+	Queue* Q = init(2*n);
+	push( Q, minDegreeVertex(n) );
+
+	while( !empty(Q) ) {
+		
+		unsigned int v = pop(Q);
+
+		R[k++] = v;
+		visited[v] = 1;
+		
+		qsort(N[v], Deg[v], sizeof(unsigned int), cmp);
+
+		for( size_t i = 0; i < Deg[v]; i++)
+			if( ! visited[ N[v][i] ] )
+				push( Q, N[v][i] );
 
 	}
-	
 
 }

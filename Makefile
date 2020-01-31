@@ -1,6 +1,6 @@
 CC = gcc-7
 
-CFLAGS = -O0
+CFLAGS = -O0 -g
 
 INC = -Iinc/
 
