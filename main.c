@@ -1,26 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include "rcm.h"
 
-int main () {
+int main (int argc, char** argv) {
 	
-	size_t n = 5;
+	int n = atoi(argv[1]);
 
+	double *A = malloc(n*n*sizeof(double));;	
+	FILE *in = fopen("data.in", "rb");
+	fread(A, sizeof(double), n*n, in);
+	fclose(in);
 
-	double A[] = 		{ 1, 0, 0, 1, 1,
-										0, 1, 0, 0, 1,
-										0, 0, 1, 0, 1,
-										1, 0, 0, 1, 1,
-										1, 1, 1, 1, 1
-									};
-
-
-	unsigned int *R = malloc(n * sizeof(unsigned int));
+	int *R = malloc(n * sizeof(uint8_t));
 
 	rcm(n,A,R);
 
-	for(size_t i = 0; i < n; i++)
-		printf("%d\n", R[i]);
+	FILE *out = fopen("data.out", "wb");
+	fwrite(R, sizeof(int), n, out);
+	fclose(out);
 
 	return 0;
 }

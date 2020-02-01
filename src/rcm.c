@@ -3,65 +3,125 @@
 #include <limits.h>
 #include "rcm.h"
 
-unsigned int* Deg;
+typedef struct Vertex {
+	int id;
+	int degree;
+	int* neighbors;
+	int visited;
+} Vertex;
 
-int cmp( const void *a, const void *b ) {
+static inline int cmp( const void* a, const void* b ) {
 	
-	int i = *(unsigned int*)a,
-			j = *(unsigned int*)b;
+	Vertex *u = (Vertex*)a,
+				 *w = (Vertex*)b;
 
-	return ( Deg[i] - Deg[j] );
+	return ( u->degree - w->degree ); 
 
 }
 
-int minDegreeVertex( size_t n ) {
+static inline int calcDegree( const int n, const double *A, const int v ) {
+	int k = 0;
+	for(int i=0; i < n; i++) k += (Amat(v,i) == 0 || v == i)? 0 : 1;
+	return k;
+}
+
+static inline void createNeighborhood( const int n, const double* A, Vertex* v) {
 	
-	int min = 0;
-	for( size_t v = 1; v < n; v++ )
-		if( Deg[min] > Deg[v] ) 
-			min = v;
+	v->neighbors = malloc( v->degree  * sizeof(int));
+	int l = 0, i = v->id;
+	for( int j = 0; j < n; j++ )
+		if( Amat(i,j) != 0 && i != j )
+			(v->neighbors)[l++] = j;
+}
+
+static inline int startVertex( const int n, Vertex V[] ) {
+	
+	// Find the first un-visited vertex.
+	int initial = -1;
+	for( int i = 0; i < n; i++ )
+		if( !V[i].visited ) {
+			initial = i;
+			break;
+		}
+
+	// Exit if all nodes have been visited before.
+	if( initial == -1 ) return -1;
+
+
+	// Find the vertex with the minimum degree,
+	// that can be reached from the initial vertex.
+	int min = initial;
+	for( int i = 0; i < n; i++)
+		if( V[i].degree < V[min].degree  && V[i].visited==FALSE)
+			min = i;
+
 	return min;
 
 }
 
-void rcm( const size_t n, const double *A, unsigned int *R ) {
+void rcm( const int n, const double *A, int *R ) {
 
-	Deg = malloc(n*sizeof(unsigned int));
-	unsigned int N[n][n],
-							 visited[n],
-							 k = 0;
+	Vertex V[n];
 
-	
-	// Create the neighborhood of each 
-	for( size_t v = 0; v < n; v++ ) {
+	for( int v = 0; v < n; v++ ) {
+		V[v].id = v;
+		V[v].degree = calcDegree(n,A,v);
+		createNeighborhood(n, A, &V[v]);
+		qsort( V[v].neighbors, V[v].degree, sizeof(Vertex), cmp );
+		V[v].visited = FALSE;
 		
-		Deg[v] = 0;
+	}
 
-		for( int i = 0; i < n; i++ ) {
-				if( Amat(v,i) != 0 && v != i ) {
-					N[v][ Deg[v]++ ] = i;
-				}
+	for(int v = 0; v < n; v++) {
+		
+		printf("\n d(%d) = %d | ", v+1, V[v].degree);
+
+		printf("N(%d) = { ", v+1);
+		for(int i = 0; i < V[v].degree; i++) {
+				printf("%d ", V[v].neighbors[i]+1);
 		}
+		printf("}\n\n");
 
-		visited[v] = 0;
 	}
 
+
+	/*
 	Queue* Q = init(2*n);
-	push( Q, minDegreeVertex(n) );
 
-	while( !empty(Q) ) {
+	int r = startVertex(n,V),
+			l = 0;
+
+	while( r != -1 ) {
 		
-		unsigned int v = pop(Q);
+		push(Q,r);
 
-		R[k++] = v;
-		visited[v] = 1;
+		while( ! empty(Q) ) {
+			
+			int v = pop(Q);
 		
-		qsort(N[v], Deg[v], sizeof(unsigned int), cmp);
+			printf("%ith possition of R filled with %d.\n", l, v);
 
-		for( size_t i = 0; i < Deg[v]; i++)
-			if( ! visited[ N[v][i] ] )
-				push( Q, N[v][i] );
+			R[l++] = v;
+			V[v].visited = TRUE;
 
+
+			// Put the neighbors to the qeueue.
+			for( int i = 0; i < V[v].degree; i++ ) {
+				
+				// u is the ith neighbor of v
+				int u = V[v].neighbors[i];
+
+				// If u is un-visited, then
+				// add u to the queue.
+				if( ! V[u].visited ) push(Q,u);
+
+			}
+
+		}
+		
+		printf("looking for unvisited vertex to start...");
+		r = startVertex(n,V);
+		printf(" done.\n");
 	}
-
+*/	
 }

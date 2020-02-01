@@ -12,10 +12,14 @@
 #ifndef __RCM_H__
 #define __RCM_H__
 
+#include <inttypes.h>
 
 // ======== DEFINITION OF MACROS
-#define 	idx(i,j)			i*n+j
+#define		TRUE					1
+#define		FALSE					0
+#define 	idx(i,j)			j*n+i
 #define		Amat(i,j)			A[idx(i,j)]
+#define		Bmat(i,j)			B[idx(i,j)]
 #define		empty(Q)			(Q->head == Q->tail)
 
 // ======= End of Definitions
@@ -28,15 +32,15 @@
 	\param R			The array which contains the final order of the veritces								[n-by-1]
 	\return 			-	
 */
-void rcm (const size_t n, const double *A, unsigned int *R );
+void rcm (const int n, const double *A, int *R );
 
 // ======== QUEUE IMPLEMENTATION
 // Type definition of Queue
 typedef struct Queue {
-	unsigned int *buffer;						// Array that stores the elements of the queue.
-	size_t head;										// The location of the first element of the queue.
-	size_t tail;										// The location of the last element of the queue.
-	size_t n;
+	int *buffer;						// Array that stores the elements of the queue.
+	int head;										// The location of the first element of the queue.
+	int tail;										// The location of the last element of the queue.
+	int n;
 } Queue;
 
 //! Initializes the Queue.
@@ -44,7 +48,7 @@ typedef struct Queue {
 	\param size			The maximum size of the queue				[scalar]
 	\return 				Pointer to the Queue								[pointer]
 */
-Queue* init(size_t size); 
+Queue* init(int size); 
 
 
 //! Adds an element to the queue.
@@ -53,7 +57,7 @@ Queue* init(size_t size);
 	\param key			The element to be inserted.															[scalar]
 	\return 				-
 */
-void push( Queue *Q, unsigned int key );
+void push( Queue *Q, int key );
 
 //! Extracts the first element of the queue.
 /*!
