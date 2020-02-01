@@ -24,6 +24,14 @@
 
 // ======= End of Definitions
 
+// Type definition of Vertex `object`
+typedef struct Vertex {
+	int id;																		// The initial id of the vertex.
+	int degree;															  // The degree of the vertex.
+	struct Vertex** neighbors;								// An array that contain all of it's neighbors.
+	int visited;															// TRUE/FALSE depends on weath has been visited during the BFS.
+} Vertex;
+
 
 //! Performs the Reverse Cuthill–McKee Algorithm
 /*!
@@ -37,7 +45,7 @@ void rcm (const int n, const double *A, int *R );
 // ======== QUEUE IMPLEMENTATION
 // Type definition of Queue
 typedef struct Queue {
-	int *buffer;						// Array that stores the elements of the queue.
+	Vertex** buffer;						// Array that stores the elements of the queue.
 	int head;										// The location of the first element of the queue.
 	int tail;										// The location of the last element of the queue.
 	int n;
@@ -57,14 +65,14 @@ Queue* init(int size);
 	\param key			The element to be inserted.															[scalar]
 	\return 				-
 */
-void push( Queue *Q, int key );
+void push( Queue *Q, Vertex* key );
 
 //! Extracts the first element of the queue.
 /*!
 	\param Q 		The queue from which to extract the element		[pointer]
 	\return			The The element that was extracted						[scalar]
 */
-int pop( Queue *Q );
+Vertex* pop( Queue *Q );
 
 
 #endif /* __RCM_H__ */
