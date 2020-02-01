@@ -12,7 +12,7 @@ int main (int argc, char** argv) {
 	fread(A, sizeof(double), n*n, in);
 	fclose(in);
 
-	int *R = malloc(n * sizeof(uint8_t));
+	int *R = malloc(n * sizeof(int));
 
 	rcm(n,A,R);
 

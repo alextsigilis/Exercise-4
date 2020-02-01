@@ -6,7 +6,7 @@
 typedef struct Vertex {
 	int id;
 	int degree;
-	int* neighbors;
+	struct Vertex** neighbors;
 	int visited;
 } Vertex;
 
@@ -21,17 +21,18 @@ static inline int cmp( const void* a, const void* b ) {
 
 static inline int calcDegree( const int n, const double *A, const int v ) {
 	int k = 0;
-	for(int i=0; i < n; i++) k += (Amat(v,i) == 0 || v == i)? 0 : 1;
+	for(int i=0; i < n; i++)
+		k += (Amat(v,i) == 0 || v == i)? 0 : 1;
 	return k;
 }
 
-static inline void createNeighborhood( const int n, const double* A, Vertex* v) {
+static inline void createNeighborhood( const int n, const double* A, Vertex V[], Vertex* v) {
 	
-	v->neighbors = malloc( v->degree  * sizeof(int));
+	v->neighbors = malloc( v->degree  * sizeof(Vertex*));
 	int l = 0, i = v->id;
 	for( int j = 0; j < n; j++ )
 		if( Amat(i,j) != 0 && i != j )
-			(v->neighbors)[l++] = j;
+			v->neighbors[l++] = &V[j];
 }
 
 static inline int startVertex( const int n, Vertex V[] ) {
@@ -66,8 +67,7 @@ void rcm( const int n, const double *A, int *R ) {
 	for( int v = 0; v < n; v++ ) {
 		V[v].id = v;
 		V[v].degree = calcDegree(n,A,v);
-		createNeighborhood(n, A, &V[v]);
-		qsort( V[v].neighbors, V[v].degree, sizeof(Vertex), cmp );
+		createNeighborhood(n, A, V, &V[v]);
 		V[v].visited = FALSE;
 		
 	}
@@ -78,7 +78,7 @@ void rcm( const int n, const double *A, int *R ) {
 
 		printf("N(%d) = { ", v+1);
 		for(int i = 0; i < V[v].degree; i++) {
-				printf("%d ", V[v].neighbors[i]+1);
+				printf("%d ", V[v].neighbors[i]->id+1);
 		}
 		printf("}\n\n");
 

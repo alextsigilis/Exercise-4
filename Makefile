@@ -1,6 +1,6 @@
 CC = gcc-7
 
-CFLAGS = -O0 -g
+CFLAGS = -O0 -g -Wall -fsanitize=address
 
 INC = -Iinc/
 
