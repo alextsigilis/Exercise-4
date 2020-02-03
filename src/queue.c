@@ -33,8 +33,14 @@ void push( Queue *Q, Vertex* key ) {
 Vertex* pop( Queue *Q ) {
 	if( Q->head < Q->tail ) {
 		return Q->buffer[Q->head++];
-	}
+	}	
 	else {
 		return  NULL;
 	}
 }
+
+//! Checks if the Queue is empty.
+int empty( Queue *Q ) {
+	return (Q->head < Q->tail)? FALSE : TRUE;
+}
+

@@ -20,7 +20,6 @@
 #define 	idx(i,j)			j*n+i
 #define		Amat(i,j)			A[idx(i,j)]
 #define		Bmat(i,j)			B[idx(i,j)]
-#define		empty(Q)			(Q->head == Q->tail)
 
 // ======= End of Definitions
 
@@ -48,7 +47,7 @@ typedef struct Queue {
 	Vertex** buffer;						// Array that stores the elements of the queue.
 	int head;										// The location of the first element of the queue.
 	int tail;										// The location of the last element of the queue.
-	int n;
+	int n;											// The maximum capacity of the queue.
 } Queue;
 
 //! Initializes the Queue.
@@ -58,6 +57,12 @@ typedef struct Queue {
 */
 Queue* init(int size); 
 
+//! Frees the resources allocated for the queue.
+/*!
+	\param Q			The Queue to be freed								[pointer]
+	\return				-
+*/
+void finalize(Queue* Q);
 
 //! Adds an element to the queue.
 /*!
@@ -73,6 +78,13 @@ void push( Queue *Q, Vertex* key );
 	\return			The The element that was extracted						[scalar]
 */
 Vertex* pop( Queue *Q );
+
+//! Checks if the Queue is empty.
+/*
+	\param Q		The Queue to be checked								[pointer]
+	\return			TRUE if is empty, FALSE otherwise			[boolean]
+*/
+int empty( Queue *Q );
 
 
 #endif /* __RCM_H__ */

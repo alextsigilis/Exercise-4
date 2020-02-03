@@ -1,8 +1,8 @@
-n = 9;
+n = 10;
 
 cmd = sprintf("./main %d", n);
 
-A = full(sprandsym(n,0.4));
+A = full(sprandsym(n,0.1));
 
 in = fopen('data.in', 'wb');
 fwrite(in, A, 'double');
@@ -18,6 +18,7 @@ r = r' + 1;
 
 p = symrcm(A);
 
-subplot(1,2,1), spy(A), title('A');
-subplot(1,2,2), spy(A(r,r)), title('A(r,r)');
-%subplot(1,2,1), spy(A(p,p)), title('A(p,p)');
+subplot(2,2,1), spy(A), title('Original A');
+subplot(2,2,2), spy(A(r,r)), title('My RCM implemention');
+subplot(2,2,3), spy(A(p,p)), title('Matlabs RCM implementation');
+subplot(2,2,4), plot(graph(A));
