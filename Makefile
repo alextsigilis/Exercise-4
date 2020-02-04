@@ -1,6 +1,6 @@
-CC = gcc-7
+CC = gcc-9
 
-CFLAGS = -O0 -g -Wall -fsanitize=address
+CFLAGS = -O3 -g -Wall -fopenmp
 
 INC = -Iinc/
 
@@ -17,4 +17,4 @@ lib/%.o: src/%.c
 	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) -c $< -o $@
 
 clean:
-	rm -rf main *.dSYM
+	rm -rf main *.dSYM lib/*.o
