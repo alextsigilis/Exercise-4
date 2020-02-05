@@ -8,17 +8,17 @@ LIBS =
 
 LDFLAGS = 
 
-test: test.c rcm.o 
+test: test.c lib/rcm.o 
+	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) $^ -o $@
+	rm -rf lib/*.o
+
+time: time.c lib/rcm.o 
 	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) $^ -o $@
 	rm -rf *.o
 
-time: time.c rcm.o 
-	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) $^ -o $@
-	rm -rf *.o
 
-
-%.o: %.c
+lib/%.o: src/%.c
 	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) -c $< -o $@
 
 clean:
-	rm -rf main *.dSYM *.o test time
+	rm -rf *.dSYM *.o test time lib/*.o

@@ -12,12 +12,10 @@
 #ifndef __RCM_H__
 #define __RCM_H__
 
-#include <inttypes.h>
+#include <stdbool.h>
 
 // ======== DEFINITION OF MACROS
-#define		TRUE					1
-#define		FALSE					0
-#define 	idx(i,j)			j*n+i
+#define 	idx(i,j)			j*n+i               // Collumn major order.
 #define		Amat(i,j)			A[idx(i,j)]
 #define		Bmat(i,j)			B[idx(i,j)]
 
@@ -35,11 +33,11 @@ typedef struct Vertex {
 //! Performs the Reverse Cuthill–McKee Algorithm
 /*!
 	\param n			The number of verices in the graph G=G(A)																[scalar]
-	\param A			The adjacency matrix of G (A is symetric and sparse).										[n-by-n]
+	\param V			Array of the vertices.                                                  [n-by-1]
 	\param R			The array which contains the final order of the veritces								[n-by-1]
 	\return 			-	
 */
-void rcm (const int n, const double *A, int *R );
+void rcm (const int n, Vertex V[], int R[] );
 
 // ======== QUEUE IMPLEMENTATION
 // Type definition of Queue
@@ -55,14 +53,15 @@ typedef struct Queue {
 	\param size			The maximum size of the queue				[scalar]
 	\return 				Pointer to the Queue								[pointer]
 */
-Queue* init(int size); 
+static inline Queue* init(int size) {
+	Queue *q = malloc(sizeof(Queue));
+	q->buffer = malloc( size * sizeof(Vertex*) );
+	q->head = 0;
+	q->tail = 0;
+	q->n = size;
+	return q;
+}
 
-//! Frees the resources allocated for the queue.
-/*!
-	\param Q			The Queue to be freed								[pointer]
-	\return				-
-*/
-void finalize(Queue* Q);
 
 //! Adds an element to the queue.
 /*!
@@ -70,21 +69,33 @@ void finalize(Queue* Q);
 	\param key			The element to be inserted.															[scalar]
 	\return 				-
 */
-void push( Queue *Q, Vertex* key );
+static inline void enqueue( Queue *Q, Vertex* key ) {
+	if( Q->tail < Q->n ) {
+		Q->buffer[Q->tail++] = key;
+	}
+}
 
 //! Extracts the first element of the queue.
 /*!
 	\param Q 		The queue from which to extract the element		[pointer]
 	\return			The The element that was extracted						[scalar]
 */
-Vertex* pop( Queue *Q );
+static inline Vertex* dequeue( Queue *Q ) {
+	if( Q->head < Q->tail ) {
+		return Q->buffer[Q->head++];
+	}	
+	else {
+		return  NULL;
+	}
+}
 
 //! Checks if the Queue is empty.
 /*
 	\param Q		The Queue to be checked								[pointer]
 	\return			TRUE if is empty, FALSE otherwise			[boolean]
 */
-int empty( Queue *Q );
-
+static inline bool empty( Queue *Q ) {
+	return (Q->head < Q->tail)? false : true;
+}
 
 #endif /* __RCM_H__ */
