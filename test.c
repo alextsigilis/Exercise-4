@@ -12,11 +12,10 @@ void init_vertex( const int n, const double A[], Vertex V[], Vertex* v ) {
 			}
 		}
 		v->degree = k;
-		v->neighbors = realloc(v->neighbors, k*sizeof(Vertex*));
+		v->neighbors = realloc(v->neighbors, k*sizeof(int));
 		v->visited = false;
 		return;
 }
-
 
 int main (int argc, char** argv) {
 

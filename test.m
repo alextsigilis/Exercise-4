@@ -1,5 +1,5 @@
 n = 2^10%input('Give n = ');
-d = 1/n;
+d = 0.001;
 
 cmd = sprintf("./test %d", n);
 

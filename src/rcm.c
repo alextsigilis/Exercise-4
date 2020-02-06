@@ -26,22 +26,22 @@ static inline int cmp( const void* a, const void* b ) {
 
 
 //! Performs Breadth First Search, using the Queue Q.
-int bfs( Queue *Q, int R[], int l, Vertex V[], int source ) {
+int bfs( Vertex V[], int R[], int l, int source ) {
 
 	int h = l,
 			t = l;
 	R[h--] = source;
+	V[source].visited = true;
 
-	while( h < t ) {	                                              // While the Queue isn't empty.
+	while( h < t ) {	                                            // While the Queue isn't empty.
 
-		Vertex *x = &V[ R[t--] ];                                       // Take the first Vertex in the queue.
+		int x = R[t--];                                             // Take the first Vertex in the queue.
 		
-		for(int i = 0; i < x->degree; i++) {                          // For every neighbor of x... u
-			int k = x->neighbors[i];                                    // Take a pointer to u.
-			Vertex *u = &V[k];
-			if( ! u->visited ) {                                        // If u is un-visited,
-				R[h--] = u->id;                                           // Add u to the queue,
-				u->visited = true;                                        // and label u as visited.
+		for(int i = 0; i < V[x].degree; i++) {                     // For every neighbor of x... u
+			int k = V[x].neighbors[i];                               // Take a pointer to u.
+			if( ! V[k].visited ) {                                      // If u is un-visited,
+				R[h--] = k;                                             // Add u to the queue,
+				V[k].visited = true;                                    // and label u as visited.
 			}
 		}
 	}
@@ -57,7 +57,6 @@ void rcm( const int n, Vertex V[], int R[] ) {
 	/* Declaring variables. */
 	int l = n-1,                                            // `l` is the current level in R.
 			min = 0;
-	Queue *Q = init(n);                                     // The Queue used in BFS.
 	
 	min++;
 	
@@ -65,7 +64,7 @@ void rcm( const int n, Vertex V[], int R[] ) {
 	for(int i = 0; i < n; i++) {           // For every vertex.
 		                                     
 		if( !V[i].visited ) {                // If that vertex has not been visited,
-			l = bfs(Q,R,l,V,V[i].id);                  // Perform BFS with V[i] as the starting vertex.
+			l = bfs(V, R, l, V[i].id);         // Perform BFS with V[i] as the starting vertex.
 		}
 
 	}
