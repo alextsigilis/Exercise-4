@@ -3,7 +3,7 @@ d = 1/n;
 
 cmd = sprintf("./test %d", n);
 
-A = sprandsym(n,d);
+A = full(sprandsym(n,d));
 
 in = fopen('data.in', 'w');
 fwrite(in, A, 'double');

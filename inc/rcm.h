@@ -25,7 +25,7 @@
 typedef struct Vertex {
 	int id;																		// The initial id of the vertex.
 	int degree;															  // The degree of the vertex.
-	struct Vertex** neighbors;								// An array that contain all of it's neighbors.
+	int* neighbors;	          								// An array that contain all of it's neighbors.
 	int visited;															// TRUE/FALSE depends on weath has been visited during the BFS.
 } Vertex;
 

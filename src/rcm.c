@@ -26,15 +26,16 @@ static inline int cmp( const void* a, const void* b ) {
 
 
 //! Performs Breadth First Search, using the Queue Q.
-int bfs( Queue *Q, int R[], int l ) {
+int bfs( Queue *Q, int R[], int l, Vertex V[] ) {
 	while( ! empty(Q) ) {                                           // While the Queue isn't empty.
 
 		Vertex *x = dequeue(Q);                                       // Take the first Vertex in the queue.
 		R[l--] = x->id;                                               // Set the l-th vertex in the premuted graph to be x (and decrease l).
-		qsort(x->neighbors,x->degree,sizeof(Vertex*), cmp);						// Sort the neighbors of x.
+		//qsort(x->neighbors,x->degree,sizeof(int*), cmp);	   					// Sort the neighbors of x.
 		
 		for(int i = 0; i < x->degree; i++) {                          // For every neighbor of x... u
-			Vertex *u = x->neighbors[i];                                // Take a pointer to u.
+			int k = x->neighbors[i];                                    // Take a pointer to u.
+			Vertex *u = &V[k];
 			if( ! u->visited ) {                                        // If u is un-visited,
 				enqueue(Q,u);                                             // Add u to the queue,
 				u->visited = true;                                        // and label u as visited.
@@ -65,7 +66,7 @@ void rcm( const int n, Vertex V[], int R[] ) {
 			enqueue(Q,&V[i]);                  // add it to the queue,
 			V[i].visited = true;               // label it as visited.
 
-				l = bfs(Q,R,l);                  // Perform BFS with V[i] as the starting vertex.
+				l = bfs(Q,R,l,V);                  // Perform BFS with V[i] as the starting vertex.
 		}
 
 	}
