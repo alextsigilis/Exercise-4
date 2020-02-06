@@ -54,7 +54,8 @@ void rcm( const int n, Vertex V[], int R[] ) {
 	int l = n-1,                                            // `l` is the current level in R.
 			min = 0;
 	Queue *Q = init(n);                                     // The Queue used in BFS.
-
+	
+	min++;
 	
 	/* Perform BFS to all conected components of the graph. */
 	for(int i = 0; i < n; i++) {           // For every vertex.

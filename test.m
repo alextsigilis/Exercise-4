@@ -1,11 +1,11 @@
-n = 1000;
+n = 2^10%input('Give n = ');
 d = 1/n;
 
 cmd = sprintf("./test %d", n);
 
-A = full(sprandsym(n,d));
+A = sprandsym(n,d);
 
-in = fopen('data.in', 'wb');
+in = fopen('data.in', 'w');
 fwrite(in, A, 'double');
 fclose(in);
 
