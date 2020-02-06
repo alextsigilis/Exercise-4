@@ -15,10 +15,10 @@
 #include <stdbool.h>
 
 // ======== DEFINITION OF MACROS
-#define 	idx(i,j)			j*n+i               // Collumn major order.
-#define		Amat(i,j)			A[idx(i,j)]
-#define		Bmat(i,j)			B[idx(i,j)]
-
+#define 	idx(i,j)				j*n+i               // Collumn major order.
+#define		Amat(i,j)				A[idx(i,j)]
+#define   enqueue(i)			R[h--] = i
+#define		dequeue()				R[t--]
 // ======= End of Definitions
 
 // Type definition of Vertex `object`
@@ -37,6 +37,6 @@ typedef struct Vertex {
 	\param R			The array which contains the final order of the veritces								[n-by-1]
 	\return 			-	
 */
-void rcm ( const int n, Vertex V[], int R[] );
+void rcm ( const int n, Vertex vertices[], int R[] );
 
 #endif /* __RCM_H__ */

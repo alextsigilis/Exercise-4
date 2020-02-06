@@ -5,18 +5,17 @@
 
 void init_vertex( const int n, const double A[], Vertex V[], Vertex* v ) {
 		int k = 0;
-		v->neighbors = malloc(n*sizeof(Vertex*));
+		v->neighbors = malloc(n*sizeof(int*));
 		for(int i = 0; i < n; i++) {
 			if( A[i] != 0 && i != v->id ) {
-				v->neighbors[k++] = &V[i];
+				v->neighbors[k++] = i;
 			}
 		}
 		v->degree = k;
-		v->neighbors = realloc(v->neighbors, k*sizeof(Vertex*));
+		v->neighbors = realloc(v->neighbors, k*sizeof(int));
 		v->visited = false;
 		return;
 }
-
 
 int main (int argc, char** argv) {
 
