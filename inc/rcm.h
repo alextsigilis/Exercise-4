@@ -37,6 +37,17 @@ typedef struct Vertex {
 	\param R			The array which contains the final order of the veritces								[n-by-1]
 	\return 			-	
 */
-void rcm ( const int n, Vertex vertices[], int R[] );
+void rcm( const int n, Vertex vertices[], int R[] );
+
+
+//! Similar to rcm(), but uses multiple threads to do the computation
+/*!
+	\param n			The number of verices in the graph G=G(A)																[scalar]
+	\param V			Array of the vertices.                                                  [n-by-1]
+	\param R			The array which contains the final order of the veritces								[n-by-1]
+	\return 			-	
+*/
+void parallel_rcm( const int n, Vertex vertices[], int R[] );
+
 
 #endif /* __RCM_H__ */

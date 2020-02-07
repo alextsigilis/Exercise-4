@@ -72,7 +72,7 @@ static inline int bfs(int R[], int l, int source ) {
 /*
     Implements the Reverse Cuthill-McKee algorithm.
 */
-void rcm( const int n, Vertex vertices[], int R[] ) {
+void parallel_rcm( const int n, Vertex vertices[], int R[] ) {
 
 	/* Declaring variables. */
 	int l = n-1, 

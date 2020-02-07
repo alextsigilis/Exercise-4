@@ -11,10 +11,10 @@ LDFLAGS =
 all: test time
 	rm -rf *.dSYM
 
-test: test.c lib/rcm.o 
+test: test.c lib/rcm.o lib/parallel_rcm.o
 	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) $^ -o $@
 
-time: time.c lib/rcm.o 
+time: time.c lib/rcm.o lib/parallel_rcm.o
 	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) $^ -o $@
 
 lib/%.o: src/%.c
