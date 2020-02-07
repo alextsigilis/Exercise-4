@@ -1,7 +1,7 @@
-n = 2^10;
-d = 0.001;
+n = 100;
+d = 0.01;
 
-cmd = sprintf("./test -P %d", n);
+cmd = sprintf("./test -S %d", n);
 
 A = full(sprandsym(n,d));
 

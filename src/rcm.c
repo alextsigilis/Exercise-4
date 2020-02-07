@@ -33,15 +33,22 @@ static inline int firstNode( int n ) {
 
 	int min = 0;
 
+	for( int i = 1; i < n; i++ ) {
+		if( V[i].degree > 0 && V[i].visited==false) {
+			min = i;
+			break;
+		}
+	}
+
 	for( int i = 0; i < n; i++ ) 
-		if( V[i].degree < min && V[i].degree > 0 )
+		if( V[i].degree < V[min].degree && V[i].degree > 0 )
 			min = i;
 
 	return min;	
 
 }
 
-//! Performs Breadth First Search, using the Queue Q.
+//! Performs Breadth First Search, using R as Queue. 
 static inline int bfs(int R[], int l, int source ) {
 
 	/* Declare and initialize head and tail of the queue */
@@ -49,23 +56,25 @@ static inline int bfs(int R[], int l, int source ) {
 			t = l;
 	
 	/* Inserting the source to the queue. */
-	enqueue(source);                                             // Put to the queue.
+	R[t++] = source;
 	V[source].visited = true;                                    // Mark as visited.
 
-	while( h < t ) {	                                           // While the Queue isn't empty.
 
-		int x = dequeue();                                         // Take the first Vertex in the queue.
+	for( int i = h; i < t; i++ ) {
+	
+		int x = R[i];                                              // Take the first Vertex in the queue.
 		qsort(V[x].neighbors, V[x].degree, sizeof(int), cmp);      // Sorting the neighbors in increasing order of degree.
 
-		for(int i = 0; i < V[x].degree; i++) {                     // For every neighbor of x... k
-			int k = V[x].neighbors[i]; 
+		for(int j = 0; j < V[x].degree; j++) {                     // For every neighbor of x... k
+			int k = V[x].neighbors[j]; 
 			if( ! V[k].visited ) {                                   // If k is un-visited,
-				enqueue(k);                                            // insert k to the queue.
+				R[t++] = V[k].id;
 				V[k].visited = true;                                   // and label k as visited.
 			}
 		}
 	}
-	return h;
+	
+	return t;
 }
 
 //! The `main` function of this file. 
@@ -75,7 +84,7 @@ static inline int bfs(int R[], int l, int source ) {
 void rcm( const int n, Vertex vertices[], int R[] ) {
 
 	/* Declaring variables. */
-	int l = n-1, 
+	int l = 0, 
 			min = 0;
 	
 	/* Setting the `global` vertices array. */
@@ -92,6 +101,12 @@ void rcm( const int n, Vertex vertices[], int R[] ) {
 			l = bfs(R, l, V[i].id);         // Perform BFS with V[i] as the starting vertex.
 		}
 	}
-
+	
+	/* Reverse R */
+	for( int i = 0; i < n/2; i++ ) {
+		int tmp = R[i];
+		R[i] = R[n-i-1];
+		R[n-i-1] = tmp;
+	}
 
 }

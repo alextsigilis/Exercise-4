@@ -23,7 +23,7 @@ void init_vertex( const int n, const double A[], Vertex V[], Vertex* v ) {
 int main (int argc, char** argv) {
 
 	int n = atoi(argv[2]),
-			R[n];
+			*R = calloc(n,sizeof(int));
 	double *A = malloc(n*sizeof(double));
 	Vertex V[n];
 	FILE *in = fopen("data.in", "rb");

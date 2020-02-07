@@ -29,11 +29,7 @@ static inline int cmp( const void* a, const void* b ) {
 }
 
 
-static inline void firstNode( int n, int* min ) {
-
-	}
-
-//! Performs Breadth First Search, using the Queue Q.
+//! Performs Breadth First Search, using R as Queue. 
 static inline int bfs(int R[], int l, int source ) {
 
 	/* Declare and initialize head and tail of the queue */
@@ -41,24 +37,27 @@ static inline int bfs(int R[], int l, int source ) {
 			t = l;
 	
 	/* Inserting the source to the queue. */
-	enqueue(source);                                             // Put to the queue.
+	R[t++] = source;
 	V[source].visited = true;                                    // Mark as visited.
 
-	while( h < t ) {	                                           // While the Queue isn't empty.
 
-		int x = dequeue();                                         // Take the first Vertex in the queue.
+	for( int i = h; i < t; i++ ) {
+	
+		int x = R[i];                                              // Take the first Vertex in the queue.
 		qsort(V[x].neighbors, V[x].degree, sizeof(int), cmp);      // Sorting the neighbors in increasing order of degree.
 
-		for(int i = 0; i < V[x].degree; i++) {                     // For every neighbor of x... k
-			int k = V[x].neighbors[i]; 
+		for(int j = 0; j < V[x].degree; j++) {                     // For every neighbor of x... k
+			int k = V[x].neighbors[j]; 
 			if( ! V[k].visited ) {                                   // If k is un-visited,
-				enqueue(k);                                            // insert k to the queue.
+				R[t++] = V[k].id;
 				V[k].visited = true;                                   // and label k as visited.
 			}
 		}
 	}
-	return h;
+	
+	return t;
 }
+
 
 //! The `main` function of this file. 
 /*
@@ -85,9 +84,8 @@ void parallel_rcm( const int n, Vertex vertices[], int R[] ) {
 				
 		#pragma omp master
 		{
-			#pragma omp task
-				l = bfs(R,l,min);
-			#pragma omp taskwait
+
+			l = bfs(R,l,min);
 			
 			for(int i = 0; i < n; i++) {        // For every vertex.
 				if( !V[i].visited ) {             // If that vertex has not been visited,
