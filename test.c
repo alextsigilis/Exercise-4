@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
+#include <stdbool.h>
+#include <string.h>
 #include "rcm.h"
 
+//! Initializes a vertex based on the adjacency matrix A
 void init_vertex( const int n, const double A[], Vertex V[], Vertex* v ) {
 		int k = 0;
 		v->neighbors = malloc(n*sizeof(int*));
@@ -17,9 +19,10 @@ void init_vertex( const int n, const double A[], Vertex V[], Vertex* v ) {
 		return;
 }
 
+//! The main function.
 int main (int argc, char** argv) {
 
-	int n = atoi(argv[1]),
+	int n = atoi(argv[2]),
 			R[n];
 	double *A = malloc(n*sizeof(double));
 	Vertex V[n];
@@ -35,7 +38,14 @@ int main (int argc, char** argv) {
 	fclose(in);
 	free(A);
 
-	rcm(n,V,R);
+	if( argv[1][1] == 'S' ){
+		printf("Running sequentialy...\n");
+		rcm(n,V,R);
+	}
+	else {
+		printf("Runnin in parallel...\n");
+		parallel_rcm(n,V,R);
+	}
 
 	FILE *out = fopen("data.out", "wb");
 	fwrite(R, sizeof(int), n, out);

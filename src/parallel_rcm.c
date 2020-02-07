@@ -11,7 +11,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <omp.h>
 #include "rcm.h"
 
 //! Static global Array of (all) the vertices.
@@ -29,17 +29,9 @@ static inline int cmp( const void* a, const void* b ) {
 }
 
 
-static inline int firstNode( int n ) {
+static inline void firstNode( int n, int* min ) {
 
-	int min = 0;
-
-	for( int i = 0; i < n; i++ ) 
-		if( V[i].degree < min && V[i].degree > 0 )
-			min = i;
-
-	return min;	
-
-}
+	}
 
 //! Performs Breadth First Search, using the Queue Q.
 static inline int bfs(int R[], int l, int source ) {
@@ -77,21 +69,34 @@ void parallel_rcm( const int n, Vertex vertices[], int R[] ) {
 	/* Declaring variables. */
 	int l = n-1, 
 			min = 0;
-	
-	/* Setting the `global` vertices array. */
+
 	V = vertices;
 
-	/* Find the `first node` and perform BFS */
-	min = firstNode(n);
-	l = bfs(R,l,min);
+	#pragma omp parallel shared(l,min,R)
+	{
 
-	/* Perform BFS to the rest un-visited conected components of the graph. */
-	for(int i = 0; i < n; i++) {        // For every vertex.
-		                                     
-		if( !V[i].visited ) {             // If that vertex has not been visited,
-			l = bfs(R, l, V[i].id);         // Perform BFS with V[i] as the starting vertex.
+		/* Find the `first node` and perform BFS */
+		#pragma omp for reduction(min:min)
+		for( int i = 0; i < n; i++ ) {
+			if( V[i].degree < min && V[i].degree > 0 )
+				min = i;
 		}
-	}
+		
+				
+		#pragma omp master
+		{
+			#pragma omp task
+				l = bfs(R,l,min);
+			#pragma omp taskwait
+			
+			for(int i = 0; i < n; i++) {        // For every vertex.
+				if( !V[i].visited ) {             // If that vertex has not been visited,
+					l = bfs(R, l, V[i].id);         // Perform BFS with V[i] as the starting vertex.
+				}
+			}
 
+		} // master
+			
+	}  // parallel.
 
 }

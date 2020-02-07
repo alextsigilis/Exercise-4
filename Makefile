@@ -21,4 +21,4 @@ lib/%.o: src/%.c
 	$(CC) $(CFLAGS) $(INC) $(LIBS) $(LDFLAGS) -c $< -o $@
 
 clean:
-	rm -rf *.dSYM *.o test time lib/*.o
+	rm -rf *.dSYM *.o test time lib/*.o data.*
