@@ -49,32 +49,38 @@ static inline int firstNode( int n ) {
 }
 
 //! Performs Breadth First Search, using R as Queue. 
-static inline int bfs(int R[], int l, int source ) {
-
-	/* Declare and initialize head and tail of the queue */
-	int h = l,
-			t = l;
+static inline int bfs(int n, int R[], int l, int source ) {
 	
-	/* Inserting the source to the queue. */
-	R[t++] = source;
-	V[source].visited = true;                                    // Mark as visited.
+	int NL[n],
+			head = l,
+			tail = l;
 
-
-	for( int i = h; i < t; i++ ) {
 	
-		int x = R[i];                                              // Take the first Vertex in the queue.
-		qsort(V[x].neighbors, V[x].degree, sizeof(int), cmp);      // Sorting the neighbors in increasing order of degree.
+	R[tail++] = source;
 
-		for(int j = 0; j < V[x].degree; j++) {                     // For every neighbor of x... k
-			int k = V[x].neighbors[j]; 
-			if( ! V[k].visited ) {                                   // If k is un-visited,
-				R[t++] = V[k].id;
-				V[k].visited = true;                                   // and label k as visited.
-			}
-		}
-	}
-	
-	return t;
+	while( head < tail ) {
+		
+		int h = 0, t = 0;
+
+		for( int i = head; i < tail; i++ ) {
+			int u = R[i];
+			for( int j = 0; j < V[u].degree; j++ ) {
+				int v = V[u].neighbors[j];
+				if( ! V[v].visited ) {
+					NL[t++] = v;
+					V[v].visited = true;
+				}//end_if
+			}//end_for
+		}//end_for
+		
+		head = tail;
+		for( int i = h; i < t; i++)
+			R[tail++] = NL[i];
+
+	}//end_while
+
+	return tail;
+
 }
 
 //! The `main` function of this file. 
@@ -92,13 +98,13 @@ void rcm( const int n, Vertex vertices[], int R[] ) {
 
 	/* Find the `first node` and perform BFS */
 	min = firstNode(n);
-	l = bfs(R,l,min);
+	l = bfs(n,R,l,min);
 
 	/* Perform BFS to the rest un-visited conected components of the graph. */
 	for(int i = 0; i < n; i++) {        // For every vertex.
 		                                     
 		if( !V[i].visited ) {             // If that vertex has not been visited,
-			l = bfs(R, l, V[i].id);         // Perform BFS with V[i] as the starting vertex.
+			l = bfs(n, R, l, V[i].id);      // Perform BFS with V[i] as the starting vertex.
 		}
 	}
 	
