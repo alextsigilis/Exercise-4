@@ -20,7 +20,7 @@ static Vertex *V;
 
 //! Compare function for the qsort routine.
 /*!
-    \function cmp_n 	for sorting the neighbors Array
+    \function cmp 	for sorting the neighbors Array
 */
 static inline int cmp( const void* a, const void* b ) {
     int u = *(int*)a,
@@ -29,17 +29,21 @@ static inline int cmp( const void* a, const void* b ) {
 }
 
 
+//! Finds the node from whom the bfs will start.
+//! typicaly the one with the smallest degree (that isn't zero)
 static inline int firstNode( int n ) {
 
 	int min = 0;
-
+	
+	/* Find an unvisited conected component. */
 	for( int i = 1; i < n; i++ ) {
 		if( V[i].degree > 0 && V[i].visited==false) {
 			min = i;
 			break;
 		}
 	}
-
+	
+	/* Find the vertex with the smallest degree in that connected component. */
 	for( int i = 0; i < n; i++ ) 
 		if( V[i].degree < V[min].degree && V[i].degree > 0 )
 			min = i;
@@ -51,32 +55,29 @@ static inline int firstNode( int n ) {
 //! Performs Breadth First Search, using R as Queue. 
 static inline int bfs(int n, int R[], int l, int source ) {
 	
-	int NL[n],
-			head = l,
+	int head = l,
 			tail = l;
 
-	
-	R[tail++] = source;
+	R[tail++] = source;          // Push source to the queue.
+	V[source].visited = true;
+                               
+	while( head < tail ) {       // While Queue isn't empty...
+	    
+		int x = R[head++];
 
-	while( head < tail ) {
-		
-		int h = 0, t = 0;
+		qsort(V[x].neighbors, V[x].degree, sizeof(int), cmp);
 
-		for( int i = head; i < tail; i++ ) {
-			int u = R[i];
-			for( int j = 0; j < V[u].degree; j++ ) {
-				int v = V[u].neighbors[j];
-				if( ! V[v].visited ) {
-					NL[t++] = v;
-					V[v].visited = true;
-				}//end_if
-			}//end_for
+		for( int j = 0; j < V[x].degree; j++ ) {
+
+			int k = V[x].neighbors[j];
+
+			if( ! V[k].visited ) {
+				R[tail++] = k;//V[k].id;
+				V[k].visited = true;
+			}//end_if
+
 		}//end_for
-		
-		head = tail;
-		for( int i = h; i < t; i++)
-			R[tail++] = NL[i];
-
+	
 	}//end_while
 
 	return tail;
@@ -104,12 +105,13 @@ void rcm( const int n, Vertex vertices[], int R[] ) {
 	for(int i = 0; i < n; i++) {        // For every vertex.
 		                                     
 		if( !V[i].visited ) {             // If that vertex has not been visited,
-			l = bfs(n, R, l, V[i].id);      // Perform BFS with V[i] as the starting vertex.
+			l = bfs(n, R, l, i);      // Perform BFS with V[i] as the starting vertex.
 		}
 	}
-	
-	/* Reverse R */
-	for( int i = 0; i < n/2; i++ ) {
+
+	/* Reverse the reorsering. */
+	for( int i = 0; i < n/2; i++ )
+	{
 		int tmp = R[i];
 		R[i] = R[n-i-1];
 		R[n-i-1] = tmp;

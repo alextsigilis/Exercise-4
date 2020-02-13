@@ -2,10 +2,10 @@ clear; hold off;
 
 setenv('OMP_NUM_THREADS', '8');
 
-n = 4000;
-d = 2/n;
+n = 800;
+d = 0.005;
 
-cmd = sprintf("./test -P %d", n);
+cmd = sprintf("./test -S %d", n);
 
 A = full(sprandsym(n,d));
 

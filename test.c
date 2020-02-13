@@ -16,6 +16,7 @@ void init_vertex( const int n, const double A[], Vertex V[], Vertex* v ) {
 		v->degree = k;
 		v->neighbors = realloc(v->neighbors, k*sizeof(int));
 		v->level = INT_MAX;
+		v->visited = false;
 		return;
 }
 
