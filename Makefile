@@ -1,6 +1,6 @@
 CC = gcc-9
 
-CFLAGS = -O3 -Wall -fopenmp #-g -fsanitize=address
+CFLAGS = -O0 -Wall -fopenmp #-g -fsanitize=address
 
 INC = -Iinc/
 

@@ -11,7 +11,9 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <limits.h>
+#include <assert.h>
+#include <omp.h>
 #include "rcm.h"
 
 //! Static global Array of (all) the vertices.
@@ -22,19 +24,29 @@ static Vertex *V;
 /*!
     \function cmp_n 	for sorting the neighbors Array
 */
-static inline int cmp( const void* a, const void* b ) {
-    int u = *(int*)a,
-        w = *(int*)b;
-		return V[u].degree - V[w].degree;
-}
+static int cmp_l( const void* a, const void* b ) {
+	
+	Vertex *v = (Vertex*)a,
+				 *u = (Vertex*)b;
 
+	return (v->level - u->level);
+
+}
+static int cmp_d( const void* a, const void* b ) {
+	
+	Vertex *v = (Vertex*)a,
+				 *u = (Vertex*)b;
+
+	return (v->degree - u->degree);
+
+}
 
 static inline int firstNode( int n ) {
 
 	int min = 0;
 
 	for( int i = 1; i < n; i++ ) {
-		if( V[i].degree > 0 && V[i].visited==false) {
+		if( V[i].degree > 0 && V[i].level==INT_MAX) {
 			min = i;
 			break;
 		}
@@ -49,39 +61,46 @@ static inline int firstNode( int n ) {
 }
 
 //! Performs Breadth First Search, using R as Queue. 
-static inline int bfs(int R[], int l, int source ) {
+static inline int bfs(const int n, const int source, const int level ) {
 
-	/* Declare and initialize head and tail of the queue */
-	int h = l,
-			t = l;
-	
-	/* Inserting the source to the queue. */
-	R[t++] = source;
-	V[source].visited = true;                                    // Mark as visited.
+	int wl[n],
+			local_wl[n],
+			max_level = level,
+			tail = 0,
+			t = 0;
 
-		//#pragma omp parallel for 
-		for( int i = h; i < t; i++ ) {
+	V[source].level = level;
+	wl[tail++] = source;
+
+	while( tail > 0 ) {
 		
-			int x = R[i];                                              // Take the first Vertex in the queue.
-			qsort(V[x].neighbors, V[x].degree, sizeof(int), cmp);      // Sorting the neighbors in increasing order of degree.
-			
-			#pragma omp parallel for
-			for(int j = 0; j < V[x].degree; j++) {                     // For every neighbor of x... k
-				int k = V[x].neighbors[j]; 
-				if( ! V[k].visited ) {                                   // If k is un-visited,
+		t = 0;
+		#pragma omp parallel for
+		for( int i = 0; i < tail; i++ ){
+			int v = wl[i];
+			for( int j = 0; j < V[v].degree; j++ ){
+				int u = V[v].neighbors[j];
+				if( V[u].level > V[v].level+1 ) {
 					#pragma omp critical
 					{
-						R[t++] = V[k].id;
-						V[k].visited = true;                                   // and label k as visited.
-					} // critical
-				} // if
-			} // for
-		} // for 
+						max_level = (max_level < V[v].level+1)? V[v].level+1 : max_level;
+						V[u].level = V[v].level+1;
+						local_wl[t++] = u;
+					}//end_ciritcal
+				}//end_if
+			}//end_for
+		}//end_for
 
-		#pragma omp barrier
-	
-	return t;
-}
+		tail = 0;
+		for( int i = 0; i < t; i++ )
+			wl[tail++] = local_wl[i];
+	}//end_while
+
+	return max_level;
+
+}//end bfs()
+
+
 
 //! The `main` function of this file. 
 /*
@@ -89,30 +108,52 @@ static inline int bfs(int R[], int l, int source ) {
 */
 void parallel_rcm( const int n, Vertex vertices[], int R[] ) {
 
-	/* Declaring variables. */
-	int l = 0, 
-			min = 0;
-	
-	/* Setting the `global` vertices array. */
+	/* Set the global vertex array. */
 	V = vertices;
 
-	/* Find the `first node` and perform BFS */
-	min = firstNode(n);
-	l = bfs(R,l,min);
+	int source = firstNode(n),
+			max_level = 0,
+			level = 0,
+			l = 0,
+			counts[n],
+			sums[n];
 
-	/* Perform BFS to the rest un-visited conected components of the graph. */
-	for(int i = 0; i < n; i++) {        // For every vertex.
-		                                     
-		if( !V[i].visited ) {             // If that vertex has not been visited,
-			l = bfs(R, l, V[i].id);         // Perform BFS with V[i] as the starting vertex.
-		}
-	}
-	
-	/* Reverse R */
-	for( int i = 0; i < n/2; i++ ) {
-		int tmp = R[i];
-		R[i] = R[n-i-1];
-		R[n-i-1] = tmp;
-	}
+		/* Run BFS for every connected component. */
+		level = bfs(n,source,level);
+		for( source = 0; source < n; source++ ) {
+			if( V[source].level == INT_MAX )
+				level = bfs(n,source,level);
+		}//end_for
 
-}
+
+		/* Count the number of nodes at each level. */
+		#pragma omp parallel for
+		for( int l = 0; l < n; l++ )
+			counts[l] = 0;
+		
+		for( int u = 0; u < n; u++ ) {
+			l = V[u].level;
+			max_level = (l > max_level)? l : max_level;
+			counts[l]++;
+		}//end_for
+
+		/* Calculate the prefix sum */
+		#pragma omp parallel for
+		for( int i = 0; i < n; i++ ) {
+			sums[i] = 0;
+			for( int j = 0; j < i; j++ )
+				sums[i] += counts[j];
+		}//end_for
+
+
+		/* Place nodes in permutation array */
+		qsort(V,n,sizeof(Vertex),cmp_l);
+		
+		#pragma omp parallel for
+		for(int l = 0; l <= max_level; l++) {
+			qsort(V+sums[l], sums[l+1]-sums[l], sizeof(Vertex), cmp_d);
+			for(int i = sums[l]; i < sums[l+1]; i++)
+				R[i] = V[i].id;
+		}//end_for
+
+}//end rcm()

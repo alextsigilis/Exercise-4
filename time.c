@@ -12,6 +12,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include <omp.h>
 #include "rcm.h"
@@ -31,7 +32,7 @@ void random_vertex( const int n, double d, Vertex V[], Vertex* v ) {
 		}
 		v->degree = k;
 		v->neighbors = realloc(v->neighbors, k*sizeof(int));
-		v->visited = false;
+		v->level = INT_MAX;
 		return;
 }
 

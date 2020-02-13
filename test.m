@@ -1,11 +1,15 @@
-n = 1000;
-d = 0.0025;
+clear; hold off;
+
+setenv('OMP_NUM_THREADS', '8');
+
+n = 4000;
+d = 2/n;
 
 cmd = sprintf("./test -P %d", n);
 
 A = full(sprandsym(n,d));
 
-in = fopen('data.in', 'w');
+in = fopen('data.in', 'wb');
 fwrite(in, A, 'double');
 fclose(in);
 

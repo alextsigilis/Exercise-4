@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <limits.h>
 #include <string.h>
 #include "rcm.h"
 
@@ -15,7 +15,7 @@ void init_vertex( const int n, const double A[], Vertex V[], Vertex* v ) {
 		}
 		v->degree = k;
 		v->neighbors = realloc(v->neighbors, k*sizeof(int));
-		v->visited = false;
+		v->level = INT_MAX;
 		return;
 }
 
