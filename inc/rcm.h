@@ -27,6 +27,7 @@ typedef struct Vertex {
 	int id;																		// The initial id of the vertex.
 	int degree;                               // Holds the degree of the vertex.
 	int level;
+	bool visited;
 } Vertex;
 
 
