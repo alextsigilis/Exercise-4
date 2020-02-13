@@ -1,11 +1,38 @@
+%
+%                       test.m
+%          ===============================
+% 
+% This script creates a random n by n sparse metrix with density d,    
+% 
+% saves that matrix to a binary file named `data.in`,
+%
+% executes the rcm implementation and get it's output.
+%
+% Then plots the reordering of my implementation versus matlab's.
+%
+%               Inputs:
+%          ----------------
+%  The script needs the followng parametes to be set before run,
+%
+%   -     n    :   The size of the sparse matrix.
+%   -     d    :   The density of the sparce matrix.
+%   - nthreads :   The number of threads to execute my implemetation on.
+%   - version  :   A string 'S' for running the Sequential version, 'P' for running the parallel one. 
+%
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
+n = 10;
+d = 0.5;
+nthreads = '1';
+version = 'S';
+%
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
 clear; hold off;
 
-setenv('OMP_NUM_THREADS', '8');
+setenv('OMP_NUM_THREADS', nthreads);
 
-n = 800;
-d = 0.005;
-
-cmd = sprintf("./test -S %d", n);
+cmd = sprintf("./test -%s %d", version, n);
 
 A = full(sprandsym(n,d));
 
